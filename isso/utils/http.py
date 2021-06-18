@@ -9,6 +9,8 @@ except ImportError:
     import http.client as httplib
     from urllib.parse import urlparse
 
+import ssl as ssllib
+
 from isso import dist
 from isso.wsgi import urlsplit
 
@@ -41,7 +43,7 @@ class curl(object):
         http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
 
         for _ in range(MAX_RETRY_COUNT):
-            self.con = http(host, port, timeout=self.timeout)
+            self.con = http(host, port, timeout=self.timeout, context=ssllib._create_unverified_context())
             try:
                 self.con.request(self.method, self.path, headers=self.headers)
             except (httplib.HTTPException, socket.error):
